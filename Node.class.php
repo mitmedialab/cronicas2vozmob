@@ -96,18 +96,22 @@ class Node {
      * @return        true if saved, false if not saved (true if faked out)
      */
     public function saveNode(){
+        switchToDrupalPath();
+        $worked = false;
         if(REALLY_IMPORT){
             $this->node = node_submit($this->node);
             if ($this->node->validated) {
                 node_save($this->node);
                 $this->saveGroups();
-                return true;
+                $worked = true;
             }
-            return false;
+        } else {
+            // if faked out
+            if($this->node->nid==null) $this->node->nid=Node::RandomNid();
+            $worked = true;
         }
-        // if faked out
-        if($this->node->nid==null) $this->node->nid=Node::RandomNid();
-        return true;
+        switchToScriptPath();
+        return $worked;
     }
 
     /**

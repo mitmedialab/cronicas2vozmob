@@ -50,7 +50,7 @@ if (($handle = fopen($contentCsvFile, "r")) !== FALSE) {
     }
     fclose($handle);
 }
-echo("Done! $row rows imported\n");
+echo("Done! $worked rows imported, $failed rows failed\n");
 
 // This is the function that actually imports things into Drupal
 // return true if imported, false if not
@@ -64,6 +64,8 @@ function importContent($content,$contentImageDir){
         Log::Write("    ".$cronica->getSyntheticOldId()." already exists - skipping");
         return false; 
     }
+
+    //print_r($cronica);exit();
     
     $cronica->copyImages();
     $saved = $cronica->saveNode();
@@ -71,6 +73,8 @@ function importContent($content,$contentImageDir){
     if(!$saved) {
         Log::Write("    ERROR: couldn't save the node for some reason (validate failed?)");
     }
+
+    return $saved;
     
 }
 

@@ -44,6 +44,7 @@ class TaxonomyTerm {
     }
     
     public static function Create($tag,$vocabulary=null){
+        switchToDrupalPath();
         if($vocabulary==null){
             $vocabulary = TaxonomyTerm::VOZMOB_VOCABULARY_ID;
         }
@@ -51,13 +52,15 @@ class TaxonomyTerm {
             "vid" => $vocabulary,
             "name" => $tag,
         );
+        $toReturn = null;
         if(REALLY_IMPORT){
             taxonomy_save_term($term);
-            return FindByName($tag);
+            $toReturn = FindByName($tag);
         } else {
-            return new TaxonomyTerm(Node::RandomNid(),$vocabulary,$tag);
+            $toReturn = new TaxonomyTerm(Node::RandomNid(),$vocabulary,$tag);
         }
-        
+        switchToScriptPath();
+        return $toReturn;        
     }
 
 }

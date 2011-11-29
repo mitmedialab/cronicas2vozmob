@@ -16,11 +16,11 @@ $_SERVER['REQUEST_METHOD'] = "GET";
 define("DRUPAL_BASE","../cronicas-vozmob/html/");
 
 // initialize Drupal bootstrap
-$currentPath = getcwd();
-chdir(DRUPAL_BASE);
+$importScriptPath = getcwd(); // global
+switchToDrupalPath();
 require_once("./includes/bootstrap.inc");
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
-chdir($currentPath);
+switchToScriptPath();
 
 // Logging in as admin user
 global $user;
@@ -32,7 +32,15 @@ Log::Initialize("logs/", false);
 // Feedback that we started up
 Log::Write("");
 Log::Write("-------------------- Drupal bootstrap initialized -----------------------------------");
-Log::Write("  running from $currentPath");
+Log::Write("  running from $importScriptPath");
 Log::Write("");
+
+function switchToDrupalPath(){
+    chdir(DRUPAL_BASE);   
+}
+function switchToScriptPath(){
+    global $importScriptPath;
+    chdir($importScriptPath);
+}
 
 ?>
