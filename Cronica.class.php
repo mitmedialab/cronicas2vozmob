@@ -16,13 +16,13 @@ class Cronica extends Node {
         $cronica = new Cronica($content,$contentImageDir);
         return $cronica;
     }
-	
-	public function Cronica($content,$contentImageDir){
-	    $this->initFromContent($content,$contentImageDir);
-	}
-	
-	private function initFromContent($content,$contentImageDir){
-	    $this->syntheticOldId = Cronica::MakeSyntheticOldId($content['town'],$content['id']);
+    
+    public function Cronica($content,$contentImageDir){
+        $this->initFromContent($content,$contentImageDir);
+    }
+    
+    private function initFromContent($content,$contentImageDir){
+        $this->syntheticOldId = Cronica::MakeSyntheticOldId($content['town'],$content['id']);
         // set the type for a vozmob report
         $this->setType(VOZMOB_STORY_TYPE);
         // set the user to anonymous
@@ -49,7 +49,7 @@ class Cronica extends Node {
         // set the free-text tags
         $this->addTags($content['tags']);
 //TODO: detect and set language
-	}
+    }
 
     private function addTags($tagList){
         $tags = explode(",",$tagList);
@@ -110,17 +110,17 @@ class Cronica extends Node {
         $this->node->og_groups = array($groupNid=>$groupNid);
     }
 
-	private function getGroupByName($name){
-	    return Node::FindByTitleAndType($name,ORGANIC_GROUP_NODE_TYPE);
-	}
-	
-	public function getSyntheticOldId(){
-	    return $this->syntheticOldId;
-	}
-	
-	public static function MakeSyntheticOldId($town,$id){
-	    return $town."-".$id;
-	}
-		
+    private function getGroupByName($name){
+        return Node::FindByTitleAndType($name,ORGANIC_GROUP_NODE_TYPE);
+    }
+    
+    public function getSyntheticOldId(){
+        return $this->syntheticOldId;
+    }
+    
+    public static function MakeSyntheticOldId($town,$id){
+        return $town."-".$id;
+    }
+        
 }
 ?>
