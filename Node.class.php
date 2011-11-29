@@ -42,10 +42,19 @@ class Node {
     
     /**
      * Need to set the "date" property, _not_ created
-     * @see http://api.drupal.org/api/drupal/modules--node--node.module/function/node_submit/6
      */
     public function setCreatedTime($timestamp){
-        $this->node->date = date(DATE_RFC822,$timestamp);
+        $this->node->date = Node::TimestampToDrupalTime($timestamp);
+    }
+    
+    /**
+     * @see http://api.drupal.org/api/drupal/modules--node--node.module/function/node_submit/6
+     */
+    public static function TimestampToDrupalTime($timestamp=null){
+        if($timestamp==null){
+            $timestamp = time();
+        }
+        return date(DATE_RFC822,$timestamp);
     }
     
     public function setAuthorUserId($userId){
