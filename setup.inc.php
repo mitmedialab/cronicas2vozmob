@@ -28,7 +28,7 @@ global $user;
 $user->uid = DRUPAL_ADMIN_UID;
 
 // setup logging facility (use Log::Write to push msgs)
-Log::Initialize("logs/", false);
+Log::Initialize("logs/");
 
 function switchToDrupalPath(){
     chdir(DRUPAL_BASE);   

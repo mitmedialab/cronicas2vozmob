@@ -11,7 +11,7 @@ class Log {
     public $fileName;
     public $echo = true;
 
-    public static function Initialize($dir, $timestampFileName) {
+    public static function Initialize($dir, $timestampFileName=true) {
         global $myLogInstance;
         $myLogInstance = new Log($dir,$timestampFileName);
     }
