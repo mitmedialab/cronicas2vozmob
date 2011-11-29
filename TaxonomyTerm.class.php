@@ -55,7 +55,7 @@ class TaxonomyTerm {
         $toReturn = null;
         if(REALLY_IMPORT){
             taxonomy_save_term($term);
-            $toReturn = FindByName($tag);
+            $toReturn = TaxonomyTerm::FindByName($tag);
         } else {
             $toReturn = new TaxonomyTerm(Node::RandomNid(),$vocabulary,$tag);
         }
