@@ -21,6 +21,15 @@ Log::Write("  running from $importScriptPath");
 $history = new ImportHistory();
 
 Log::Write("");
+Log::Write("-------------------- Backing Up -----------------------------------");
+
+switchToDrupalPath();
+_backup_migrate_backup_with_defaults();
+switchToScriptPath();
+Log::Write("");
+exit();
+
+Log::Write("");
 Log::Write("-------------------- Importing -----------------------------------");
 // load up the content to import
 $pathToContent = $argv[1];
