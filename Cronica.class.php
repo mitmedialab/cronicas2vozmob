@@ -22,7 +22,7 @@ class Cronica extends Node {
 	}
 	
 	private function initFromContent($content,$contentImageDir){
-	    $this->syntheticOldId = $content['town']."-".$content['id'];
+	    $this->syntheticOldId = Cronica::MakeSyntheticOldId($content['town'],$content['id']);
         // set the type for a vozmob report
         $this->setType(VOZMOB_STORY_TYPE);
         // set the user to anonymous
@@ -48,7 +48,6 @@ class Cronica extends Node {
         $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
         // set the free-text tags
         $this->addTags($content['tags']);
-//TODO: set the old id (town-id)
 //TODO: detect and set language
 	}
 
@@ -119,13 +118,9 @@ class Cronica extends Node {
 	    return $this->syntheticOldId;
 	}
 	
-	/**
-	 * Once 
-	 */
-	public function exists(){
-//TODO
-        return false;
+	public static function MakeSyntheticOldId($town,$id){
+	    return $town."-".$id;
 	}
-	
+		
 }
 ?>

@@ -6,6 +6,7 @@ require_once("Log.class.php");
 require_once("Node.class.php");
 require_once("Cronica.class.php");
 require_once("TaxonomyTerm.class.php");
+require_once("ImportHistory.class.php");
 
 define("DRUPAL_ANONYMOUS_UID",0);
 define("DRUPAL_ADMIN_UID",1);
@@ -28,12 +29,6 @@ $user->uid = DRUPAL_ADMIN_UID;
 
 // setup logging facility (use Log::Write to push msgs)
 Log::Initialize("logs/", false);
-
-// Feedback that we started up
-Log::Write("");
-Log::Write("-------------------- Drupal bootstrap initialized -----------------------------------");
-Log::Write("  running from $importScriptPath");
-Log::Write("");
 
 function switchToDrupalPath(){
     chdir(DRUPAL_BASE);   

@@ -13,9 +13,18 @@ if($argc!=2){
     exit();
 }
 
+// Feedback that we started up
+Log::Write("");
+Log::Write("-------------------- Initializing -----------------------------------");
+Log::Write("  running from $importScriptPath");
+
+$history = new ImportHistory();
+
+Log::Write("");
+Log::Write("-------------------- Importing -----------------------------------");
 // load up the content to import
 $pathToContent = $argv[1];
-echo("Importing content from $pathToContent\n");
+Log::Write("  Importing content from $pathToContent\n");
 $contentCsvFile = $pathToContent."/data.csv";
 $contentImageDir = $pathToContent."/images/";
 
@@ -50,20 +59,28 @@ if (($handle = fopen($contentCsvFile, "r")) !== FALSE) {
     }
     fclose($handle);
 }
-echo("Done! $worked rows imported, $failed rows failed\n");
+
+Log::Write("");
+Log::Write("-------------------- Done  -----------------------------------");
+Log::Write("  $worked rows imported, $failed rows failed");
+$history->writeToFile();
+Log::Write("");
 
 // This is the function that actually imports things into Drupal
 // return true if imported, false if not
 function importContent($content,$contentImageDir){
+    global $history;
 
-    Log::Write("  Importing ".$content['town']." Cronica id ".$content['id']);
-    $cronica = Cronica::FromArray($content,$contentImageDir);
-
+    $syntheticOldId = Cronica::MakeSyntheticOldId($content['town'], $content['id']);
+    Log::Write("  Importing Cronica ".$syntheticOldId);
+    
     // check if it is already imported (compound id for uniqueness made up of town and old id)
-    if($cronica->exists()){
-        Log::Write("    ".$cronica->getSyntheticOldId()." already exists - skipping");
+    if($history->alreadyImported($syntheticOldId)){
+        Log::Write("    ".$syntheticOldId." already exists - skipping");
         return false; 
     }
+
+    $cronica = Cronica::FromArray($content,$contentImageDir);
 
     //print_r($cronica);exit();
     
@@ -72,6 +89,9 @@ function importContent($content,$contentImageDir){
 
     if(!$saved) {
         Log::Write("    ERROR: couldn't save the node for some reason (validate failed?)");
+    } else {
+        Log::Write("    imported to node id ".$cronica->node->nid);
+        $history->put($cronica->getSyntheticOldId(), $cronica->node->nid);
     }
 
     return $saved;
