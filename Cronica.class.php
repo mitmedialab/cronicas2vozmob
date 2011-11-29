@@ -65,6 +65,7 @@ class Cronica extends Node {
         $srcPath = $srcDir.$picture;
         if(!file_exists($srcPath)){
             Log::Write("    ERROR: source image file doesn't exists at ".$srcPath);
+            return;
         }
         $destDir = DRUPAL_BASE.DRUPAL_IMAGE_SUBDIR;
         $destPath = $destDir.$picture;
