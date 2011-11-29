@@ -27,7 +27,6 @@ switchToDrupalPath();
 _backup_migrate_backup_with_defaults();
 switchToScriptPath();
 Log::Write("");
-exit();
 
 Log::Write("");
 Log::Write("-------------------- Importing -----------------------------------");
