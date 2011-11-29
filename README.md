@@ -9,6 +9,8 @@ Setup
 
 You need to make sure that you set the `DRUPAL_BASE` variable correctly in the setup.inc.php file.  This should be the relative path to the vozmob Drupal folder.
 
+Also be sure you make all the Organic Groups before running the import script, each one should be named the same as the "Gui.CityName" variable in the Cronicas CakePHP config file.
+
 Instructions
 ------------
 
