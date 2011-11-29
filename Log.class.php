@@ -14,7 +14,6 @@ class Log {
     public static function Initialize($dir, $timestampFileName) {
         global $myLogInstance;
         $myLogInstance = new Log($dir,$timestampFileName);
-        echo("  (logging to $myLogInstance->fileName)\n");
     }
 
     public static function Write($str) {
@@ -23,15 +22,19 @@ class Log {
     }
     
     public function writeLine($str){
-        fwrite($this>logFile, $str);
-        if($this->echo) echo($str);
+        if($this->echo) {
+            print($str);
+            flush();
+        }
+        fwrite($this->logFile, $str);
     }
     
     public function Log($dir, $timestampFileName) {
         $logFileName = "import";
         $postpend = ($timestampFileName) ? "-".time() : "";
         $this->fileName = $dir.$logFileName."$postpend.log";
-        $this->logFile = fopen($$this->fileName,'w');
+        $this->logFile = @fopen($this->fileName,'w');
+        $this->writeLine("Logging to ".$this->fileName);
     }
 
 }

@@ -1,4 +1,3 @@
-
 .DS_Store
-
 import-history.bin
+logs/*.log
