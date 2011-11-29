@@ -48,8 +48,8 @@ class Cronica extends Node {
         $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
         // set the free-text tags
         $this->addTags($content['tags']);
-        // set the old id (town-id)
-//TODO
+//TODO: set the old id (town-id)
+//TODO: detect and set language
 	}
 
     private function addTags($tagList){
@@ -67,17 +67,26 @@ class Cronica extends Node {
         if(!file_exists($srcPath)){
             Log::Write("    ERROR: source image file doesn't exists at ".$srcPath);
         }
-        $destPath = DRUPAL_BASE.DRUPAL_IMAGE_SUBDIR.$picture;
+        $destDir = DRUPAL_BASE.DRUPAL_IMAGE_SUBDIR;
+        $destPath = $destDir.$picture;
         $this->picturesToCopy[$srcPath] = $destPath;    //queue it up to copy while saving
         // set the metadata on the node
-        $imageMetadata = array(
-            "uid"=>DRUPAL_ANONYMOUS_UID,
-            "filename"=>$picture,
-            "filepath"=>DRUPAL_IMAGE_SUBDIR.$picture,
-            "status"=>1,
-            "timestamp"=>$timestamp
-        );
-        $this->node->field_image = array($imageMetadata);
+        if(REALLY_IMPORT){
+            // see http://drupal.org/node/458778#comment-1653696
+            $anonymousUser = new stdClass();
+            $anonymousUser->uid = DRUPAL_ANONYMOUS_UID;
+            $tempDir = sys_get_temp_dir();
+            $tempPath = $tempDir."/".$picture;
+            copy($srcPath,$tempPath);   // TODO: handle this copy failing for some reason
+            switchToDrupalPath();
+            $fileNode = field_file_save_file($tempPath,array(),DRUPAL_IMAGE_SUBDIR,$anonymousUser);
+            // TODO: handle this file not getting created
+            switchToScriptPath();
+        } else {
+            $fileNode = new stdClass();
+            $fileNode->fid = Node::RandomNid();
+        }
+        $this->node->field_image = array(0=>$fileNode);
     }
 
     public function copyImages(){
