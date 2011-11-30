@@ -3,6 +3,8 @@
 define("ORGANIC_GROUP_NODE_TYPE", "group");
 define("VOZMOB_STORY_TYPE", "blog");
 define("DRUPAL_IMAGE_SUBDIR", "sites/default/files/image/1/");
+define("DRUPAL_LANGUAGE_ENGLISH","en");
+define("DRUPAL_LANGUAGE_SPANISH","es");
 
 /**
  * Manage a Cronica for importing
@@ -38,6 +40,16 @@ class Cronica extends Node {
         $this->setTitle($content['name']);
         // set the body
         $this->setBody($content['body']);
+        // set the language (using "the" as a proxy for english works suprisingly well on this dataset)
+        $language = null;
+        if(strpos($content['body'],"the")===false){
+            $language = DRUPAL_LANGUAGE_SPANISH;
+        } else {
+            $language = DRUPAL_LANGUAGE_ENGLISH;
+        }
+        if($language){
+            $this->node->language = $language;
+        }
         // set the created time and updated time
         $this->setCreatedTime($content['timestamp']);
         // set if it is published or not
@@ -48,7 +60,6 @@ class Cronica extends Node {
         $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
         // set the free-text tags
         $this->addTags($content['tags']);
-//TODO: detect and set language
     }
 
     private function addTags($tagList){
