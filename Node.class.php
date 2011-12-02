@@ -9,19 +9,7 @@ class Node {
 
     public $node;
 
-    public function __contruct() {
-    }
-
-    /**
-     * Set the old Nid on the field, useful for historical purposes
-     */
-    public function setOldNid($oldNid){
-        $this->node->{DRUPAL_NODE_OLD_ID_FIELD} = array(
-                0=>array('value'=>$oldNid)
-            );
-    }
-    public function getOldNid($oldNid){
-        return $this->node->{DRUPAL_NODE_OLD_ID_FIELD}[0]['value'];
+    public function Node() {
     }
 
     public function __toString(){
@@ -63,23 +51,6 @@ class Node {
 
     public function setStatus($published){
         $this->node->status = $published;
-    }
-
-    /**
-     * What is this node's new nid?
-     * @return     new nid if found, null if not in db
-     */
-    public static function NidFromOldId($oldId){
-        $found = null;
-        $oldIdCckTableName = "content_".DRUPAL_NODE_OLD_ID_FIELD;
-        $oldIdCckFieldName = DRUPAL_NODE_OLD_ID_FIELD."_value";
-        $sql = "SELECT nid FROM {".$oldIdCckTableName."} WHERE ".$oldIdCckFieldName.".='%d'";
-        $results = db_query($sql,$oldId);
-        $foundObj = db_fetch_object($results);
-        $found = $foundObj->nid;
-        unset($foundObj);        
-        unset($results);
-        return $found;
     }
 
     /**
@@ -165,12 +136,18 @@ class Node {
      }
 
     /**
-     * Load up and initialize a new lecture from it's nid
+     * Load up and initialize an existin node
      */
     public static function FromNid($nid){
         $node = new Node();
-        $node->node = node_load($nid);
+        $node->load($nid);
         return $node;
+    }
+    
+    public function loadFromNid($nid){
+        switchToDrupalPath();
+        $this->node = node_load($nid);
+        switchToScriptPath();
     }
     
     /**
