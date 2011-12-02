@@ -40,6 +40,10 @@ class ImportHistory {
     public function alreadyImported($oldSyntheticKey){
         return array_key_exists($oldSyntheticKey,$this->oldToNew);
     }
+    
+    public function getNid($oldSyntheticKey){
+        return $this->oldToNew[$oldSyntheticKey];
+    }
 
 }
 

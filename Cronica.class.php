@@ -14,52 +14,60 @@ class Cronica extends Node {
     var $syntheticOldId;
     var $picturesToCopy = array();  // array from src to dest
 
-    public static function FromArray($content,$contentImageDir){
-        $cronica = new Cronica($content,$contentImageDir);
+    public static function FromArray($content,$contentImageDir,$nid){
+        $cronica = new Cronica($content,$contentImageDir,$nid);
         return $cronica;
     }
     
-    public function Cronica($content,$contentImageDir){
-        $this->initFromContent($content,$contentImageDir);
+    public function Cronica($content,$contentImageDir,$nid=null){
+        $this->loadFromNid($nid);
+        $this->initFromContent($content,$contentImageDir,($nid!=null));
     }
     
-    private function initFromContent($content,$contentImageDir){
+    private function initFromContent($content,$contentImageDir,$updating){
         $this->syntheticOldId = Cronica::MakeSyntheticOldId($content['town'],$content['id']);
-        // set the type for a vozmob report
-        $this->setType(VOZMOB_STORY_TYPE);
-        // set the user to anonymous
-        $this->setAuthorUserId(DRUPAL_ANONYMOUS_UID);
-        // set the town as the group
-        $groupNid = $this->getGroupByName($content['town']);
-        if($groupNid){
-            $this->setGroup($groupNid,$content['town']);
-        } else {
-            Log::Write("    ERROR: Node ".$this->getSyntheticOldId()." has an unknown group named '".$content['town']."'");
-        }
+        
         // set the title to the name
         $this->setTitle($content['name']);
         // set the body
         $this->setBody($content['body']);
-        // set the language (using "the" as a proxy for english works suprisingly well on this dataset)
-        $language = null;
-        if(strpos($content['body'],"the")===false){
-            $language = DRUPAL_LANGUAGE_SPANISH;
-        } else {
-            $language = DRUPAL_LANGUAGE_ENGLISH;
-        }
-        if($language){
-            $this->node->language = $language;
-        }
-        // set the created time and updated time
-        $this->setCreatedTime($content['timestamp']);
+        // make sure comments are allowed (WTF: why doesn't this work automatically?)
+        $this->node->comment = 2;   // TODO: move this to a helper function
         // set if it is published or not
         $this->setStatus($content['published']);
-        // set the geo lat and long
-        $this->setLatLon($content['latitude'],$content['longitude']);
-        // add in any pictures
-        $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
-        // set the free-text tags
-        $this->addTags($content['tags']);
+        
+        if(!$updating){     // to make it easier, only set these on first import
+            // set the type for a vozmob report
+            $this->setType(VOZMOB_STORY_TYPE);
+            // set the user to anonymous
+            $this->setAuthorUserId(DRUPAL_ANONYMOUS_UID);
+            // set the language (using "the" as a proxy for english works suprisingly well on this dataset)
+            $language = null;
+            if(strpos($content['body'],"the")===false){
+                $language = DRUPAL_LANGUAGE_SPANISH;
+            } else {
+                $language = DRUPAL_LANGUAGE_ENGLISH;
+            }
+            if($language){
+                $this->node->language = $language;
+            }
+            // set the created time and updated time
+            $this->setCreatedTime($content['timestamp']);
+            // set the town as the group
+            $groupNid = $this->getGroupByName($content['town']);
+            if($groupNid){
+                $this->setGroup($groupNid,$content['town']);
+            } else {
+                Log::Write("    ERROR: Node ".$this->getSyntheticOldId()." has an unknown group named '".$content['town']."'");
+            }
+            // set the geo lat and long
+            $this->setLatLon($content['latitude'],$content['longitude']);
+            // add in any pictures
+            $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
+            // set the free-text tags
+            $this->addTags($content['tags']);
+        }
+        
     }
 
     private function addTags($tagList){

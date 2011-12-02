@@ -83,12 +83,14 @@ function importContent($content,$contentImageDir){
     Log::Write("  Importing Cronica ".$syntheticOldId);
     
     // check if it is already imported (compound id for uniqueness made up of town and old id)
-    if($history->alreadyImported($syntheticOldId)){
-        Log::Write("    ".$syntheticOldId." already exists - skipping");
-        return false; 
+    $alreadyImported = $history->alreadyImported($syntheticOldId);
+    $existingNid = null;
+    if($alreadyImported){
+        $existingNid = $history->getNid($syntheticOldId);
+        Log::Write("    ".$syntheticOldId." already exists as node $existingNid - will do a partial update");
     }
 
-    $cronica = Cronica::FromArray($content,$contentImageDir);
+    $cronica = Cronica::FromArray($content,$contentImageDir,$existingNid);
 
     //print_r($cronica);exit();
     
