@@ -14,7 +14,7 @@ define("DRUPAL_ADMIN_UID",1);
 $_SERVER['REMOTE_ADDR'] = "localhost";
 $_SERVER['REQUEST_METHOD'] = "GET";
 //$_SERVER['SERVER_SOFTWARE'] = "fake";
-define("DRUPAL_BASE","../cronicas-vozmob/html/");
+define("DRUPAL_BASE","../vojo-dev/html/");
 
 // initialize Drupal bootstrap
 $importScriptPath = getcwd(); // global
