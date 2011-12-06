@@ -35,6 +35,8 @@ class Cronica extends Node {
         $this->node->comment = 2;   // TODO: move this to a helper function
         // set if it is published or not
         $this->setStatus($content['published']);
+        // add in any pictures
+        $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
         
         if(!$updating){     // to make it easier, only set these on first import
             // set the type for a vozmob report
@@ -62,8 +64,6 @@ class Cronica extends Node {
             }
             // set the geo lat and long
             $this->setLatLon($content['latitude'],$content['longitude']);
-            // add in any pictures
-            $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
             // set the free-text tags
             $this->addTags($content['tags']);
         }
@@ -87,18 +87,28 @@ class Cronica extends Node {
             return;
         }
         $destDir = DRUPAL_BASE.DRUPAL_IMAGE_SUBDIR;
-        $destPath = $destDir.$picture;
-        $this->picturesToCopy[$srcPath] = $destPath;    //queue it up to copy while saving
+        $uniquePictureName = $timestamp."_".$picture;   // make sure to not overwrite a diff post's image (!)
+        $destPath = $destDir.$uniquePictureName;
         // set the metadata on the node
         if(REALLY_IMPORT){
-            // see http://drupal.org/node/458778#comment-1653696
+            // see http://drupal.org/node/458778#comment-1653696 (copy them to temp dir)
             $anonymousUser = new stdClass();
             $anonymousUser->uid = DRUPAL_ANONYMOUS_UID;
             $tempDir = sys_get_temp_dir();
-            $tempPath = $tempDir."/".$picture;
-            copy($srcPath,$tempPath);   // TODO: handle this copy failing for some reason
+            $tempPath = $tempDir."/".$uniquePictureName;
+            $copyToTempWorked = copy($srcPath,$tempPath);   // TODO: handle this copy failing for some reason
+            if(!$copyToTempWorked){
+                Log::Write("    ERROR: couldn't copy image from $srcPath!");
+                exit();            
+            }
             switchToDrupalPath();
             $fileNode = field_file_save_file($tempPath,array(),DRUPAL_IMAGE_SUBDIR,$anonymousUser);
+            if($fileNode==0){
+                Log::Write("    ERROR: unable to save related file from $tempPath");
+                exit();
+            } else {
+                Log::Write("    saved related file to $uniquePictureName");
+            }
             // TODO: handle this file not getting created
             switchToScriptPath();
         } else {
@@ -106,18 +116,6 @@ class Cronica extends Node {
             $fileNode->fid = Node::RandomNid();
         }
         $this->node->field_image = array(0=>$fileNode);
-    }
-
-    public function copyImages(){
-        foreach($this->picturesToCopy as $src=>$dest){
-            if(REALLY_IMPORT){
-                $worked = copy($src, $dest);
-                if(!$worked){
-                    Log::Write("    ERROR: couldn't copy image from ".$srcPath." to ".$destPath);
-                    exit();
-                }
-            }
-        }
     }
 
     private function setLatLon($lat,$lon){

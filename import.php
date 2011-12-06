@@ -94,7 +94,6 @@ function importContent($content,$contentImageDir){
 
     //print_r($cronica);exit();
     
-    $cronica->copyImages();
     $saved = $cronica->saveNode();
 
     if(!$saved) {
