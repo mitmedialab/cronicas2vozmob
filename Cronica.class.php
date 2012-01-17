@@ -37,6 +37,8 @@ class Cronica extends Node {
         $this->setStatus($content['published']);
         // add in any pictures
         $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
+        // set the location
+        $this->setLocation($content['latitude'],$content['longitude'],$content['address']);
         
         if(!$updating){     // to make it easier, only set these on first import
             // set the type for a vozmob report
@@ -62,8 +64,6 @@ class Cronica extends Node {
             } else {
                 Log::Write("    ERROR: Node ".$this->getSyntheticOldId()." has an unknown group named '".$content['town']."'");
             }
-            // set the geo lat and long
-            $this->setLatLon($content['latitude'],$content['longitude']);
             // set the free-text tags
             $this->addTags($content['tags']);
         }
@@ -118,8 +118,8 @@ class Cronica extends Node {
         $this->node->field_image = array(0=>$fileNode);
     }
 
-    private function setLatLon($lat,$lon){
-        $locData = array("latitude"=>$lat,"longitude"=>$lon);
+    private function setLocation($lat,$lon,$address){
+        $locData = array("latitude"=>$lat,"longitude"=>$lon,"name"=>$address);
         $this->node->location = $locData;
         $this->node->locations = array($locData);
     }
