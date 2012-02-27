@@ -1,7 +1,5 @@
 <?php
 
-define("DRUPAL_NODE_OLD_ID_FIELD","field_old_id");  // TODO: ???
-
 /**
  * Based class to wrap operations scripts want to perform on drupal nodes.
  */
@@ -29,20 +27,24 @@ class Node {
     }
     
     /**
-     * Need to set the "date" property, _not_ created
+     * To change the created date you need to set the "date" property, _not_ created
+     * @see http://fooninja.net/2011/04/13/guide-to-programmatic-node-creation-in-drupal-7/
      */
     public function setCreatedTime($timestamp){
         $this->node->date = Node::TimestampToDrupalTime($timestamp);
     }
     
     /**
+     * Change a timestamp to the string format Drupal expects on nodes
      * @see http://api.drupal.org/api/drupal/modules--node--node.module/function/node_submit/6
+     * @see http://drupal.org/node/286069
      */
     public static function TimestampToDrupalTime($timestamp=null){
         if($timestamp==null){
             $timestamp = time();
         }
-        return date(DATE_RFC822,$timestamp);
+        //return date(DATE_RFC822,$timestamp);
+        return format_date($timestamp, 'custom', 'Y-m-d H:i:s O');
     }
     
     public function setAuthorUserId($userId){

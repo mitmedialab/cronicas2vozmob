@@ -39,6 +39,8 @@ class Cronica extends Node {
         $this->addImage($content['picture'],$content['timestamp'],$contentImageDir);
         // set the location
         $this->setLocation($content['latitude'],$content['longitude'],$content['address']);
+        // update the created time (updated time will set itself to now, which seems fine (to remember when we last imported it)
+        $this->setCreatedTime($content['timestamp']);
         
         if(!$updating){     // to make it easier, only set these on first import
             // set the type for a vozmob report
@@ -55,8 +57,6 @@ class Cronica extends Node {
             if($language){
                 $this->node->language = $language;
             }
-            // set the created time and updated time
-            $this->setCreatedTime($content['timestamp']);
             // set the town as the group
             $groupNid = $this->getGroupByName($content['town']);
             if($groupNid){
