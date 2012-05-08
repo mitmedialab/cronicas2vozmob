@@ -32,7 +32,7 @@ class Cronica extends Node {
         // set the body
         $this->setBody($content['body']);
         // make sure comments are allowed (WTF: why doesn't this work automatically?)
-        $this->node->comment = 2;   // TODO: move this to a helper function
+        $this->setCommentMode(2);
         // set if it is published or not
         $this->setStatus($content['published']);
         // add in any pictures
@@ -118,11 +118,32 @@ class Cronica extends Node {
         $this->node->field_image = array(0=>$fileNode);
     }
 
+    /**
+     * Set the story location (this uses an OpenLayers WKT field, and a separate text field for the address)
+     */
+    private function setLocation($lat, $lon, $address){
+        //save into  WKT (field_map)
+        $this->node->field_map = array(
+            0 => array(
+                'openlayers_wkt' => 'GEOMETRYCOLLECTION(POINT('  . $lon . ' ' . $lat . '))'
+            )
+        );
+        // save user-entered string into address text field
+        $this->node->field_location_string = array(
+            0=> array(
+                'value' => $address
+            )
+        );
+    }
+    /*
+    // DEPRECATED: this old way saved the location via node_locations - BOO!
     private function setLocation($lat,$lon,$address){
+        // this uses the Node Locations module fields
         $locData = array("latitude"=>$lat,"longitude"=>$lon,"name"=>$address);
         $this->node->location = $locData;
         $this->node->locations = array($locData);
     }
+    */
 
     private function setGroup($groupNid,$groupName){
         $this->node->og_groups = array($groupNid=>$groupNid);

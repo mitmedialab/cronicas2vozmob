@@ -64,6 +64,13 @@ class Node {
     }
 
     /**
+     * Set the comment mode
+     */
+    protected function setCommentMode($mode){
+        $this->node->comment = $mode;
+    }
+
+    /**
      * Set the specified field to an empty array
      *     (doesn't save)
      * @return true if there were some things removed, false if there weren't
